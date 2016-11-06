@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+    <head>
+        <meta charset="UTF-8">
+        <title>Music Finder</title>	
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+        <script
+        src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+        crossorigin="anonymous"></script>  
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <style>
+            /* Sticky footer styles
+        -------------------------------------------------- */
+        html {
+          position: relative;
+          min-height: 100%;
+        }
+        body {
+          /* Margin bottom by footer height */
+          margin-bottom: 60px;
+          background: url(entry.jpg) no-repeat bottom center fixed;
+          background-color: #000;
+        }
+        .footer {
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          /* Set the fixed height of the footer here */
+          height: 40px;
+          background-color: #f5f5f5;
+        }
+        /* Custom page CSS
+        -------------------------------------------------- */
+        /* Not required for template or sticky footer method. */
+        .container {
+          width: auto;
+          max-width: 680px;
+          padding: 0 15px;
+        }
+        .container .text-muted {
+          margin: 20px 0;
+        }
+     </style>
+    </head>
+    <body>
+        <nav class="navbar navbar-inverse">  
+            <a class="navbar-brand" href="#">MusicFinder</a>  
+            <ul class="nav navbar-nav">    
+                <li class="nav-item active">      
+                    <a class="nav-link" href="#">Home
+                    <span class="sr-only">(current)
+                    </span></a>    
+                </li>  
+            </ul>
+        </nav>
+        <div class="container">
+            <h1>Heafinder</h1>
+            <div class="panel panel-default">
+                <div class="panel-heading">請輸入心情，尋找歌單
+                </div>
+                <div class="panel-body">	
+                    <div class="col-sm-10">  	
+                        <form name="myForm">			
+                            <input type="text" class="form-control" name="keyword" id="inStr">    
+                        </form>	
+                    </div>	
+                    <div class="col-sm-2">		
+                        <button class="btn btn-default">搜尋</button>	
+                    </div>
+                    <br>
+                    <div id="show-tags">
+                        <h1><span class="label label-success col-sm-2" id="tagLabel1"></span></h1>
+                        <h1><span class="label label-success col-sm-2" id="tagLabel2"></span></h1>
+                        <h1><span class="label label-success col-sm-2" id="tagLabel3"></span></h1>
+                        <h1><span class="label label-success col-sm-2" id="tagLabel4"></span></h1>
+                        <h1><span class="label label-success col-sm-2" id="tagLabel5"></span></h1>
+                        <h1><span class="label label-success col-sm-2" id="tagLabel6"></span></h1>
+                    </div>
+                    <br>
+                    <div id="show-data">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+            <p class="text-muted text-center">Copyright @ 2016</p>
+        </footer>
+        <script>
+            var showData = $('#show-data');
+            var loveList2 = [];
+            var loveList3 = [];
+            var loveList5 = [];
+            var breakList2 = [];
+            var breakList3 = [];
+            var breakList5 = [];
+            var silentList2 = [];
+            var silentList3 = [];
+            var silentList5 = [];
+
+            var nextLayer = true;
+            var cmpStr = "";
+            var emoStr = "";
+            var emoLove = 0.0;
+            var emoBreak = 0.0;
+            var emoSilent = 0.0;
+
+            var loopTimes = 0;
+            var listFound = false;
+            var thePlayList = [];
+
+            function calWeight() {
+                loopTimes++;
+                loveList2.forEach(function(loveEle2) {
+                    if (cmpStr.indexOf(loveEle2) != -1) {
+                        emoLove += 0.2;
+                    }
+                });
+                loveList3.forEach(function(loveEle3) {
+                    if (cmpStr.indexOf(loveEle3) != -1) {
+                        emoLove += 0.3;
+                    }
+                });
+                loveList5.forEach(function(loveEle5) {
+                    if (cmpStr.indexOf(loveEle5) != -1) {
+                        emoLove += 0.5;
+                    }
+                });
+                breakList2.forEach(function(breakEle2) {
+                    if (cmpStr.indexOf(breakEle2) != -1) {
+                        emoBreak += 0.2;
+                    }
+                });
+                breakList3.forEach(function(breakEle3) {
+                    if (cmpStr.indexOf(breakEle3) != -1) {
+                        emoBreak += 0.3;
+                    }
+                });
+                breakList5.forEach(function(breakEle5) {
+                    if (cmpStr.indexOf(breakEle5) != -1) {
+                        emoBreak += 0.5;
+                    }
+                });
+                silentList2.forEach(function(silentEle2) {
+                    if (cmpStr.indexOf(silentEle2) != -1) {
+                        emoSilent += 0.2;
+                    }
+                });
+                silentList3.forEach(function(silentEle3) {
+                    if (cmpStr.indexOf(silentEle3) != -1) {
+                        emoSilent += 0.3;
+                    }
+                });
+                silentList5.forEach(function(silentEle5) {
+                    if (cmpStr.indexOf(silentEle5) != -1) {
+                        emoSilent += 0.5;
+                    }
+                });
+
+                if ((1.0 < emoLove) && (emoLove >= emoBreak + emoSilent)) {
+                    emoStr = "愛情";
+                    listFound = true;
+                    return;
+                }
+                if ((1.0 < emoBreak) && (emoBreak >= emoLove + emoSilent)) {
+                    emoStr = "失戀";
+                    listFound = true;
+                    return;
+                }
+                if ((1.0 < emoSilent) && (emoSilent >= emoLove + emoBreak)) {
+                    emoStr = "安靜";
+                    listFound = true;
+                    return;
+                }
+
+                if ((emoLove >= emoBreak) && (emoBreak >= emoSilent)) {
+                    document.getElementById('tagLabel1').textContent = loveList5[0];
+                    document.getElementById('tagLabel2').textContent = loveList5[1];
+                    document.getElementById('tagLabel3').textContent = loveList5[2];
+                    document.getElementById('tagLabel4').textContent = breakList5[0];
+                    document.getElementById('tagLabel5').textContent = breakList5[1];
+                    document.getElementById('tagLabel6').textContent = silentList5[0];
+                }
+                if ((emoLove >= emoSilent) && (emoSilent >= emoBreak)) {
+                    document.getElementById('tagLabel1').textContent = loveList5[0];
+                    document.getElementById('tagLabel2').textContent = loveList5[1];
+                    document.getElementById('tagLabel3').textContent = loveList5[2];
+                    document.getElementById('tagLabel4').textContent = silentList5[0];
+                    document.getElementById('tagLabel5').textContent = silentList5[1];
+                    document.getElementById('tagLabel6').textContent = breakList5[0];
+                }
+                if ((emoBreak >= emoLove) && (emoLove >= emoSilent)) {
+                    document.getElementById('tagLabel1').textContent = breakList5[0];
+                    document.getElementById('tagLabel2').textContent = breakList5[1];
+                    document.getElementById('tagLabel3').textContent = breakList5[2];
+                    document.getElementById('tagLabel4').textContent = loveList5[0];
+                    document.getElementById('tagLabel5').textContent = loveList5[1];
+                    document.getElementById('tagLabel6').textContent = silentList5[0];
+                }
+                if ((emoBreak >= emoSilent) && (emoSilent >= emoLove)) {
+                    document.getElementById('tagLabel1').textContent = breakList5[0];
+                    document.getElementById('tagLabel2').textContent = breakList5[1];
+                    document.getElementById('tagLabel3').textContent = breakList5[2];
+                    document.getElementById('tagLabel4').textContent = silentList5[0];
+                    document.getElementById('tagLabel5').textContent = silentList5[1];
+                    document.getElementById('tagLabel6').textContent = loveList5[0];
+                }
+                if ((emoSilent >= emoLove) && (emoLove >= emoBreak)) {
+                    document.getElementById('tagLabel1').textContent = silentList5[0];
+                    document.getElementById('tagLabel2').textContent = silentList5[1];
+                    document.getElementById('tagLabel3').textContent = silentList5[2];
+                    document.getElementById('tagLabel4').textContent = loveList5[0];
+                    document.getElementById('tagLabel5').textContent = loveList5[1];
+                    document.getElementById('tagLabel6').textContent = breakList5[0];
+                }
+                if ((emoSilent >= emoBreak) && (emoBreak >= emoLove)) {
+                    document.getElementById('tagLabel1').textContent = silentList5[0];
+                    document.getElementById('tagLabel2').textContent = silentList5[1];
+                    document.getElementById('tagLabel3').textContent = silentList5[2];
+                    document.getElementById('tagLabel4').textContent = breakList5[0];
+                    document.getElementById('tagLabel5').textContent = breakList5[1];
+                    document.getElementById('tagLabel6').textContent = loveList5[0];
+                }
+                if (2 <= loopTimes) {
+                    if (emoSilent >= emoBreak) {
+                        emoStr = "安靜";
+                        if (emoLove > emoSilent) {
+                            emoStr = "愛情";
+                        }
+                    }
+                    if (emoBreak >= emoLove) {
+                        emoStr = "失戀";
+                        if (emoSilent > emoBreak) {
+                            emoStr = "安靜";
+                        }
+                    }
+                    if (emoLove >= emoBreak) {
+                        emoStr = "愛情";
+                        if (emoSilent > emoLove) {
+                            emoStr = "安靜";
+                        }
+                    }
+                    listFound = true;
+                }
+            }
+
+            function printPlayList() {
+                showData.text('載入中1...');
+                var cntr = 0;
+                var outList = [];
+                var items = thePlayList.items.map(function (item) {
+                    if (item.cate.indexOf(emoStr) != -1) {
+                        cntr++;
+                        outList.push( item.name + '  :  [' + item.singer + ']  <a href=\"' + item.link + '\">[Link]</a>');
+                    }
+                });
+                showData.text('載入中1...');
+                showData.empty();
+                showData.text('為您推薦的歌曲列表:');
+                if (0 < cntr) {
+                    var content = '<br><li>' + outList.join('</li><li>') + '</li>';
+                    var list = $('<ul />').html(content);
+                    showData.append(list);
+                }
+            }
+
+            $(".btn-default").click(function() {
+                $.getJSON('emo.json', function (data) {
+                    var items = data.items.map(function (item) {
+                        if ((item.emo.indexOf("愛情") != -1) &&
+                            (item.point.indexOf("0.2") != -1)) {
+                          loveList2 = item.cate.split('|');
+                        }
+                        if ((item.emo.indexOf("愛情") != -1) &&
+                            (item.point.indexOf("0.3") != -1)) {
+                          loveList3 = item.cate.split('|');
+                        }
+                        if ((item.emo.indexOf("愛情") != -1) &&
+                            (item.point.indexOf("0.5") != -1)) {
+                          loveList5 = item.cate.split('|');
+                        }
+                        if ((item.emo.indexOf("失戀") != -1) &&
+                            (item.point.indexOf("0.2") != -1)) {
+                          breakList2 = item.cate.split('|');
+                        }
+                        if ((item.emo.indexOf("失戀") != -1) &&
+                            (item.point.indexOf("0.3") != -1)) {
+                          breakList3 = item.cate.split('|');
+                        }
+                        if ((item.emo.indexOf("失戀") != -1) &&
+                            (item.point.indexOf("0.5") != -1)) {
+                          breakList5 = item.cate.split('|');
+                        }
+                        if ((item.emo.indexOf("安靜") != -1) &&
+                            (item.point.indexOf("0.2") != -1)) {
+                          silentList2 = item.cate.split('|');
+                        }
+                        if ((item.emo.indexOf("安靜") != -1) &&
+                            (item.point.indexOf("0.3") != -1)) {
+                          silentList3 = item.cate.split('|');
+                        }
+                        if ((item.emo.indexOf("安靜") != -1) &&
+                            (item.point.indexOf("0.5") != -1)) {
+                          silentList5 = item.cate.split('|');
+                        }
+                    });
+                });
+
+                $.getJSON('playlist.json', function (data) {
+                    // var tagLabels = ["", "", "", "", "", ""];
+                    cmpStr = document.getElementById('inStr').value;
+                    thePlayList = data;
+
+                    calWeight();
+                    if (listFound) {
+                        printPlayList();
+                    } else {
+                        showData.text('▲ 請點選一個貼近心情的詞 ▲');
+                    }
+                });
+                showData.text('載入中...');
+            });
+
+
+            $(".label-success").click(function(){
+                $(this).attr("class","label label-primary col-sm-2");
+                $(".label-primary").each(function(){
+                    cmpStr += $(this).text();
+                    nextLayer = true;
+                    calWeight();
+                    if (listFound) {
+                        printPlayList();
+                    }
+                })
+            });
+        </script>
+    </body>
+</html>
